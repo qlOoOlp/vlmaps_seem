@@ -11,20 +11,19 @@ import matplotlib.patches as mpatches
 # function to display the topdown map
 from PIL import Image
 from scipy.spatial.transform import Rotation as R
-import h5py
 from typing import List, Dict, Tuple, Set, Union
 
-def initalize_maps(save_paths, gs, camera_height, clip_feat_dims, flag=True):
-    if flag:
-        color_top_down_save_path, grid_save_path, weight_save_path, obstacles_save_path, _ = save_paths
-        
-        color_top_down_height = (camera_height + 1) * np.ones((gs, gs), dtype=np.float32)
-        color_top_down = np.zeros((gs, gs, 3), dtype=np.uint8)
+def initalize_maps(save_paths, gs=None, camera_height=None, clip_feat_dims=None):
+    # path
+    color_top_down_save_path, grid_save_path, weight_save_path, obstacles_save_path, _ = save_paths
+    
+    color_top_down_height = (camera_height + 1) * np.ones((gs, gs), dtype=np.float32)
+    color_top_down = np.zeros((gs, gs, 3), dtype=np.uint8)
 
-        # gt = np.zeros((gs, gs), dtype=np.int32)
-        grid = np.zeros((gs, gs, clip_feat_dims), dtype=np.float32)  
-        obstacles = np.ones((gs, gs), dtype=np.uint8)
-        weight = np.zeros((gs, gs), dtype=float)                     
+    # gt = np.zeros((gs, gs), dtype=np.int32)
+    grid = np.zeros((gs, gs, clip_feat_dims), dtype=np.float32)  # VLMap
+    obstacles = np.ones((gs, gs), dtype=np.uint8)
+    weight = np.zeros((gs, gs), dtype=float)                     # overlapped number
 
     # initalize
     save_map(color_top_down_save_path, color_top_down)
@@ -33,7 +32,7 @@ def initalize_maps(save_paths, gs, camera_height, clip_feat_dims, flag=True):
     save_map(weight_save_path, weight)
     save_map(obstacles_save_path, obstacles)
 
-    return color_top_down_height, color_top_down, grid, obstacles, weight
+    return color_top_down_height
 
 def cvt_pose_vec2tf(pos_quat_vec: np.ndarray) -> np.ndarray:
     """

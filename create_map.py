@@ -1,26 +1,25 @@
 import os, sys
-# import json
-import torch
 
 from vlmaps.create_maps import update_maps_sim, update_maps
 
 from utils.parser import parse_args, save_args
 from utils.clip_utils import get_clip_feats_dim
-from utils.mapping_utils import save_map, initalize_maps
+from utils.mapping_utils import initalize_maps
 
 def main():
     # Step0. parameter 설정
     args = parse_args()
     mask_version = args.mask_version
 
+    # Step1. path 설정
     data_path = os.path.join(args.root_path, args.data_option)
-    if args.data_option=='habitat_sim':
-        args.img_save_dir = os.path.join(data_path, '5LpN3gDmAk7_1')
     if args.data_option=='rtabmap':
-        print("Here is date that data is created.")
-        [print(f"Option{i+1}: {date}") for i, date in enumerate(os.listdir(data_path))]
         try:
-            args.date = input("Input date: ")
+            print("Here is date that data is created.")
+            [print(f"Option{i+1}: {date}") for i, date in enumerate(os.listdir(data_path))]
+            if len(os.listdir(data_path))==1:
+                args.date = os.listdir(data_path)[0]
+            else: args.date = input("Input date: ")
             save_args(args)
         except FileNotFoundError:
             print("제시된 Option을 재확인해주세요.")
@@ -63,6 +62,7 @@ def main():
             pose_list = [os.path.join(pose_dir, x) for x in pose_list]
 
             lists = [rgb_list, depth_list, pose_list]
+
         elif args.data_option=='rtabmap':
             lists = [rgb_list, depth_list]
 
@@ -81,19 +81,13 @@ def main():
     obstacles_save_path = os.path.join(map_save_dir, "obstacles.npy")
 
     save_paths = [color_top_down_save_path, grid_save_path, weight_save_path, obstacles_save_path, param_save_path]
-    color_top_down_height, color_top_down, grid, obstacles, weight = initalize_maps(save_paths, args.gs, args.camera_height, clip_feat_dims, flag=True)
+    color_top_down_height = initalize_maps(save_paths, args.gs, args.camera_height, clip_feat_dims)
 
     # Step2. update maps
     if args.data_option=='habitat_sim':
-        update_maps_sim(save_paths, lists, color_top_down_height, color_top_down, grid, weight, obstacles)
+        update_maps_sim(save_paths, lists, color_top_down_height)
     elif args.data_option=='rtabmap':
-        update_maps(save_paths, lists, color_top_down_height, color_top_down, grid, weight, obstacles)
-
-    save_map(color_top_down_save_path, color_top_down)
-    # save_map(gt_save_path, gt)
-    save_map(grid_save_path, grid)
-    save_map(weight_save_path, weight)
-    save_map(obstacles_save_path, obstacles)
+        update_maps(save_paths, lists, color_top_down_height)
 
 if __name__=="__main__":
     main()

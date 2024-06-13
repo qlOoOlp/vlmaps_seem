@@ -11,6 +11,7 @@ def parse_args():
     # data path
     parser.add_argument('--root-path', type=str)
     parser.add_argument('--data-option', type=str, default='habitat_sim', choices=['habitat_sim', 'rtabmap'])
+    parser.add_argument('--data-name', type=str, default='5LpN3gDmAk7_1')
     
     # related to vlmaps
     parser.add_argument('--cs', type=int, default=0.025) # 0.05
@@ -44,6 +45,7 @@ def parse_args_load_map():
     # data
     parser.add_argument('--root-path', type=str, default='/data')
     parser.add_argument('--data-option', type=str, default='habitat_sim', choices=['habitat_sim', 'rtabmap'])
+    parser.add_argument('--data-name', type=str, default='5LpN3gDmAk7_1')
 
     # maps
     parser.add_argument('--color-map', action='store_true', help='if given, show top-down color map')
@@ -62,8 +64,7 @@ def save_args(args):
     data_path = os.path.join(args.root_path, args.data_option)
 
     if args.data_option=='habitat_sim':
-        data_name = '5LpN3gDmAk7_1'
-        args.img_save_dir = os.path.join(data_path, data_name)
+        args.img_save_dir = os.path.join(data_path, args.data_name)
     elif args.data_option=='rtabmap':
         sub_save_dir = os.path.join(data_path, args.date)
         if len(os.listdir(sub_save_dir))==1:

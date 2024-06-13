@@ -26,7 +26,8 @@ def get_lseg_feat(
     norm_std=[0.5, 0.5, 0.5],
     vis=False,
 ):
-
+    
+    # preprocess
     vis_image = image.copy()
     image = transform(image).unsqueeze(0).cuda()
     img = image[0].permute(1, 2, 0)

@@ -5,17 +5,22 @@ import numpy as np
 from tqdm import tqdm
 
 from utils.lseg_utils import get_lseg_feat
-from utils.mapping_utils import load_obj2cls_dict, save_map, load_pose, load_depth_npy, load_semantic_npy, cvt_obj_id_2_cls_id
-from utils.mapping_utils import depth2pc, transform_pc, get_sim_cam_mat, pos2grid_id, project_point
-from utils.get_transform import get_transform
-
+from utils.mapping_utils import save_map, load_pose, load_map, depth2pc, transform_pc, get_sim_cam_mat, pos2grid_id, project_point, load_depth_npy
 from utils.preprocess import png_to_npy
+from utils.get_transform import get_transform
 
 from lseg.modules.models.lseg_net import LSegEncNet
 
-def update_maps_sim(save_paths, lists, color_top_down_height, color_top_down, grid, weight, obstacles):
+def update_maps_sim(save_paths, lists, color_top_down_height):
     # load paths & lists
     color_top_down_save_path, grid_save_path, weight_save_path, obstacles_save_path, param_save_path = save_paths
+
+    color_top_down = load_map(color_top_down_save_path)
+    grid = load_map(grid_save_path)
+    weight = load_map(weight_save_path)
+    obstacles = load_map(obstacles_save_path)
+
+    # data
     rgb_list, depth_list, pose_list = lists
 
     # read hparams
@@ -55,12 +60,7 @@ def update_maps_sim(save_paths, lists, color_top_down_height, color_top_down, gr
         rot_ro_cam[1, 1] = -1
         rot_ro_cam[2, 2] = -1
         rot = rot @ rot_ro_cam         
-        '''
-        rot_ro_cam
-        [[1, 0, 0],
-        [0, -1, 0],
-        [0, 0, -1]]
-        '''
+        
         pos[1] += args['camera_height']
 
         pose = np.eye(4)
@@ -97,12 +97,11 @@ def update_maps_sim(save_paths, lists, color_top_down_height, color_top_down, gr
         mask = mask[shuffle_mask]   
         pc = pc[:, shuffle_mask]    
         pc = pc[:, mask]
-
         # Step2-1. local to global point cloud
         pc_global = transform_pc(pc, tf)
 
-        rgb_cam_mat = get_sim_cam_mat(rgb.shape[0], rgb.shape[1])             
-        feat_cam_mat = get_sim_cam_mat(pix_feats.shape[2], pix_feats.shape[3])
+        rgb_cam_mat = get_sim_cam_mat(rgb.shape[0], rgb.shape[1])               # no fov
+        feat_cam_mat = get_sim_cam_mat(pix_feats.shape[2], pix_feats.shape[3])  # no fov
 
         # Step3. project all the global point cloud onto the ground
         for i, (p, p_local) in enumerate(zip(pc_global.T, pc.T)):
@@ -139,11 +138,23 @@ def update_maps_sim(save_paths, lists, color_top_down_height, color_top_down, gr
             obstacles[y, x] = 0
         pbar.update(1)
 
-def update_maps(save_paths, lists, color_top_down_height, color_top_down, grid, weight, obstacles):
+    save_map(color_top_down_save_path, color_top_down)
+    # save_map(gt_save_path, gt)
+    save_map(grid_save_path, grid)
+    save_map(weight_save_path, weight)
+    save_map(obstacles_save_path, obstacles)
+
+def update_maps(save_paths, lists, color_top_down_height):
+    # Step 0.
     # load paths & lists
     color_top_down_save_path, grid_save_path, weight_save_path, obstacles_save_path, param_save_path = save_paths
 
-    # read the param json
+    color_top_down = load_map(color_top_down_save_path)
+    grid = load_map(grid_save_path)
+    weight = load_map(weight_save_path)
+    obstacles = load_map(obstacles_save_path)
+
+    # data
     rgb_list, depth_list = lists
 
     # read hparams
@@ -175,24 +186,18 @@ def update_maps(save_paths, lists, color_top_down_height, color_top_down, grid, 
 
     # load all images and depths and poses per one image
     for data_sample in zip(rgb_list, depth_list, f.readlines()):
-        rgb_path, depth_path, pose_line = data_sample
+        rgb_path, depth_path, pose_path = data_sample
 
         # 1. read rgb
         bgr = cv2.imread(rgb_path)
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
 
-        pos, rot = load_pose(pose_line, flag=False)
+        # 2. read pose: transform to camera coordinate
+        pos, rot = load_pose(pose_path, flag=False)
         rot_ro_cam = np.eye(3)              
-        rot_ro_cam[1, 1] = -1
-        rot_ro_cam[2, 2] = -1
         rot = rot @ rot_ro_cam
-        '''
-        rot_ro_cam
-        [[1, 0, 0],
-        [0, -1, 0],
-        [0, 0, -1]]
-        '''
-        pos[1] += args['camera_height']
+
+        pos[1] += (args['camera_height'])
 
         pose = np.eye(4)
         pose[:3, :3] = rot
@@ -204,20 +209,15 @@ def update_maps(save_paths, lists, color_top_down_height, color_top_down, grid, 
 
         tf = init_tf_inv @ pose
 
-        # 2. read depth
+        # 3. read depth
         depth = png_to_npy(depth_path)
-
-        # 3. read semantic
-        # semantic = load_semantic_npy(semantic_path)
-        # semantic = cvt_obj_id_2_cls_id(semantic, obj2cls)
 
         # lseg features
         labels = args['lang'].split(",")
         transform, _MEAN, _STD = get_transform()
-
         pix_feats = get_lseg_feat(model, rgb, labels, transform, args['crop_size'], args['base_size'], _MEAN, _STD)
 
-        # Step2. depth to local point cloud
+        # Step1. depth to local point cloud
         pc, mask = depth2pc(depth)
 
         # sampling
@@ -245,17 +245,13 @@ def update_maps(save_paths, lists, color_top_down_height, color_top_down, grid, 
                 continue
 
             # Step4. rgb embedding vector
+            # when the projected location is already assigned a color value before, overwrite if the current point has larger height
             rgb_px, rgb_py, rgb_pz = project_point(rgb_cam_mat, p_local)
             rgb_v = rgb[rgb_py, rgb_px, :]
-            # semantic_v = semantic[rgb_py, rgb_px]
-            # if semantic_v == 40:
-            #     semantic_v = -1
-
-            # when the projected location is already assigned a color value before, overwrite if the current point has larger height
-            if p_local[1] < color_top_down_height[y, x]:
-                color_top_down[y, x] = rgb_v
-                color_top_down_height[y, x] = p_local[1]
-                # gt[y, x] = semantic_v
+            if 0 <= rgb_px < rgb.shape[1] and 0 <= rgb_py < rgb.shape[0]:  # 범위 검사를 여기서 수행
+                if p_local[1] < color_top_down_height[y, x]:
+                    color_top_down[y, x] = rgb_v
+                    color_top_down_height[y, x] = p_local[1]
 
             # average the visual embeddings if multiple points are projected to the same grid cell
             px, py, pz = project_point(feat_cam_mat, p_local)
@@ -269,3 +265,8 @@ def update_maps(save_paths, lists, color_top_down_height, color_top_down, grid, 
                 continue
             obstacles[y, x] = 0
         pbar.update(1)
+        
+    save_map(color_top_down_save_path, color_top_down)
+    # save_map(gt_save_path, gt)
+    save_map(grid_save_path, grid)
+    save_map(weight_save_path, weight)
