@@ -1,265 +1,286 @@
-# Created by https://www.toptal.com/developers/gitignore/api/linux,python,images
-# Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,images
+*__pycache__
+*.DS_Store
+runs
+distance_prediction
+features
+wandb
+images
+graphs
+data
+*obj_names_features.txt
+*place_names_features.txt
+*.npy
+*.yml
+*checkpoints
+*.ckpt
+*logs
+rgb.mp4
+depth.mp4
+DATA/
+outputs/
 
-### vscode ###
-*.json
+# # Created by https://www.toptal.com/developers/gitignore/api/linux,python,images
+# # Edit at https://www.toptal.com/developers/gitignore?templates=linux,python,images
 
-### Images ###
-# JPEG
-*.jpg
-*.jpeg
-*.jpe
-*.jif
-*.jfif
-*.jfi
-*.png
+# ### vscode ###
+# *.json
 
-# JPEG 2000
-*.jp2
-*.j2k
-*.jpf
-*.jpx
-*.jpm
-*.mj2
+# ### Images ###
+# # JPEG
+# *.jpg
+# *.jpeg
+# *.jpe
+# *.jif
+# *.jfif
+# *.jfi
+# *.png
 
-# JPEG XR
-*.jxr
-*.hdp
-*.wdp
+# # JPEG 2000
+# *.jp2
+# *.j2k
+# *.jpf
+# *.jpx
+# *.jpm
+# *.mj2
 
-# Graphics Interchange Format
-*.gif
+# # JPEG XR
+# *.jxr
+# *.hdp
+# *.wdp
 
-# Mode weight files
-# *.ckpt
-# *.pt
-checkpoints/
+# # Graphics Interchange Format
+# *.gif
 
-# RAW
-*.raw
+# # Mode weight files
+# # *.ckpt
+# # *.pt
+# checkpoints/
 
-# Web P
-*.webp
+# # RAW
+# *.raw
 
-# Portable Network Graphics
-*.png
+# # Web P
+# *.webp
 
-# Animated Portable Network Graphics
-*.apng
+# # Portable Network Graphics
+# *.png
 
-# Multiple-image Network Graphics
-*.mng
+# # Animated Portable Network Graphics
+# *.apng
 
-# Tagged Image File Format
-*.tiff
-*.tif
+# # Multiple-image Network Graphics
+# *.mng
 
-# Scalable Vector Graphics
-*.svg
-*.svgz
+# # Tagged Image File Format
+# *.tiff
+# *.tif
 
-# Portable Document Format
-*.pdf
+# # Scalable Vector Graphics
+# *.svg
+# *.svgz
 
-# X BitMap
-*.xbm
+# # Portable Document Format
+# *.pdf
 
-# BMP
-*.bmp
-*.dib
+# # X BitMap
+# *.xbm
 
-# ICO
-*.ico
+# # BMP
+# *.bmp
+# *.dib
 
-# 3D Images
-*.3dm
-*.max
+# # ICO
+# *.ico
 
-### Linux ###
-*~
+# # 3D Images
+# *.3dm
+# *.max
 
-# temporary files which can be created if a process still has a handle open of a deleted file
-.fuse_hidden*
+# ### Linux ###
+# *~
 
-# KDE directory preferences
-.directory
+# # temporary files which can be created if a process still has a handle open of a deleted file
+# .fuse_hidden*
 
-# Linux trash folder which might appear on any partition or disk
-.Trash-*
+# # KDE directory preferences
+# .directory
 
-# .nfs files are created when an open file is removed but is still being accessed
-.nfs*
+# # Linux trash folder which might appear on any partition or disk
+# .Trash-*
 
-### Python ###
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# # .nfs files are created when an open file is removed but is still being accessed
+# .nfs*
 
-# C extensions
-*.so
+# ### Python ###
+# # Byte-compiled / optimized / DLL files
+# __pycache__/
+# *.py[cod]
+# *$py.class
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# # C extensions
+# *.so
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# # Distribution / packaging
+# .Python
+# build/
+# develop-eggs/
+# dist/
+# downloads/
+# eggs/
+# .eggs/
+# lib/
+# lib64/
+# parts/
+# sdist/
+# var/
+# wheels/
+# share/python-wheels/
+# *.egg-info/
+# .installed.cfg
+# *.egg
+# MANIFEST
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+# # PyInstaller
+# #  Usually these files are written by a python script from a template
+# #  before PyInstaller builds the exe, so as to inject date/other infos into it.
+# *.manifest
+# *.spec
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+# # Installer logs
+# pip-log.txt
+# pip-delete-this-directory.txt
 
-# Translations
-*.mo
-*.pot
+# # Unit test / coverage reports
+# htmlcov/
+# .tox/
+# .nox/
+# .coverage
+# .coverage.*
+# .cache
+# nosetests.xml
+# coverage.xml
+# *.cover
+# *.py,cover
+# .hypothesis/
+# .pytest_cache/
+# cover/
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+# # Translations
+# *.mo
+# *.pot
 
-# Flask stuff:
-instance/
-.webassets-cache
+# # Django stuff:
+# *.log
+# local_settings.py
+# db.sqlite3
+# db.sqlite3-journal
 
-# Scrapy stuff:
-.scrapy
+# # Flask stuff:
+# instance/
+# .webassets-cache
 
-# Sphinx documentation
-docs/_build/
+# # Scrapy stuff:
+# .scrapy
 
-# PyBuilder
-.pybuilder/
-target/
+# # Sphinx documentation
+# docs/_build/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# # PyBuilder
+# .pybuilder/
+# target/
 
-# IPython
-profile_default/
-ipython_config.py
+# # Jupyter Notebook
+# .ipynb_checkpoints
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+# # IPython
+# profile_default/
+# ipython_config.py
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+# # pyenv
+# #   For a library or package, you might want to ignore these files since the code is
+# #   intended to run in multiple environments; otherwise, check them in:
+# # .python-version
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+# # pipenv
+# #   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+# #   However, in case of collaboration, if having platform-specific dependencies or dependencies
+# #   having no cross-platform support, pipenv may install dependencies that don't work, or not
+# #   install all needed dependencies.
+# #Pipfile.lock
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/#use-with-ide
-.pdm.toml
+# # poetry
+# #   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
+# #   This is especially recommended for binary packages to ensure reproducibility, and is more
+# #   commonly ignored for libraries.
+# #   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
+# #poetry.lock
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
+# # pdm
+# #   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
+# #pdm.lock
+# #   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
+# #   in version control.
+# #   https://pdm.fming.dev/#use-with-ide
+# .pdm.toml
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+# # PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
+# __pypackages__/
 
-# SageMath parsed files
-*.sage.py
+# # Celery stuff
+# celerybeat-schedule
+# celerybeat.pid
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# # SageMath parsed files
+# *.sage.py
 
-# Spyder project settings
-.spyderproject
-.spyproject
+# # Environments
+# .env
+# .venv
+# env/
+# venv/
+# ENV/
+# env.bak/
+# venv.bak/
 
-# Rope project settings
-.ropeproject
+# # Spyder project settings
+# .spyderproject
+# .spyproject
 
-# mkdocs documentation
-/site
+# # Rope project settings
+# .ropeproject
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+# # mkdocs documentation
+# /site
 
-# Pyre type checker
-.pyre/
+# # mypy
+# .mypy_cache/
+# .dmypy.json
+# dmypy.json
 
-# pytype static type analyzer
-.pytype/
+# # Pyre type checker
+# .pyre/
 
-# Cython debug symbols
-cython_debug/
+# # pytype static type analyzer
+# .pytype/
 
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+# # Cython debug symbols
+# cython_debug/
 
-### Python Patch ###
-# Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
-poetry.toml
+# # PyCharm
+# #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
+# #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+# #  and can be added to the global gitignore or merged into this file.  For a more nuclear
+# #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
+# #.idea/
 
-# ruff
-.ruff_cache/
+# ### Python Patch ###
+# # Poetry local configuration file - https://python-poetry.org/docs/configuration/#local-configuration
+# poetry.toml
 
-# LSP config files
-pyrightconfig.json
+# # ruff
+# .ruff_cache/
 
-# End of https://www.toptal.com/developers/gitignore/api/linux,python,images
+# # LSP config files
+# pyrightconfig.json
+
+# # End of https://www.toptal.com/developers/gitignore/api/linux,python,images
