@@ -13,7 +13,13 @@ from PIL import Image
 from scipy.spatial.transform import Rotation as R
 from typing import List, Dict, Tuple, Set, Union
 
-def initalize_maps(save_paths, gs=None, camera_height=None, clip_feat_dims=None):
+def calculate_fov_cropped(original_fov, original_size, cropped_size):
+    original_fov_rad = np.deg2rad(original_fov)
+    new_fov_rad = 2 * np.arctan(np.tan(original_fov_rad / 2) * (cropped_size / original_size))
+    new_fov_deg = np.rad2deg(new_fov_rad)
+    return new_fov_deg
+
+def initalize_maps(save_paths, gs, camera_height, clip_feat_dims):
     # path
     color_top_down_save_path, grid_save_path, weight_save_path, obstacles_save_path, _ = save_paths
     
@@ -23,7 +29,7 @@ def initalize_maps(save_paths, gs=None, camera_height=None, clip_feat_dims=None)
     # gt = np.zeros((gs, gs), dtype=np.int32)
     grid = np.zeros((gs, gs, clip_feat_dims), dtype=np.float32)  # VLMap
     obstacles = np.ones((gs, gs), dtype=np.uint8)
-    weight = np.zeros((gs, gs), dtype=float)                     # overlapped number
+    weight = np.zeros((gs, gs), dtype=float)                    # overlapped number
 
     # initalize
     save_map(color_top_down_save_path, color_top_down)
@@ -31,6 +37,11 @@ def initalize_maps(save_paths, gs=None, camera_height=None, clip_feat_dims=None)
     save_map(grid_save_path, grid)
     save_map(weight_save_path, weight)
     save_map(obstacles_save_path, obstacles)
+
+    print(f"color_top_down shape: {color_top_down.shape}")
+    print(f"grid shape: {grid.shape}")
+    print(f"weight shape: {weight.shape}")
+    print(f"obstacles shape: {obstacles.shape}")
 
     return color_top_down_height
 
@@ -267,8 +278,8 @@ def depth2pc(depth, fov=90, intr_mat=None, min_depth=0.1, max_depth=2):
 
     # Step2. 2D grids for the image coordinates (x, y) and the depth values (z).
     y, x = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
-    x = x.reshape((1, -1))[:, :] + 0.5
-    y = y.reshape((1, -1))[:, :] + 0.5
+    x = x.reshape((1, -1))[:, :] #+ 0.5
+    y = y.reshape((1, -1))[:, :] #+ 0.5
     z = depth.reshape((1, -1))[:, :]
     p_2d = np.vstack([x, y, np.ones_like(x)])
 
@@ -278,7 +289,7 @@ def depth2pc(depth, fov=90, intr_mat=None, min_depth=0.1, max_depth=2):
 
     # Step4. min_depth ~ max_depth 사이에 있는 point cloud만 가져옴
     mask = pc[2, :] > min_depth
-    mask = np.logical_and(mask, pc[2, :] < max_depth)
+    # mask = np.logical_and(mask, pc[2, :] < max_depth)
     # pc = pc[:, mask]
     return pc, mask
 
@@ -631,6 +642,44 @@ def project_points(cam_mat, p):
     x = (new_p[0, :] - 0.5).astype(int)
     y = (new_p[1, :] - 0.5).astype(int)
     return x, y, z
+
+def depth2pc_with_fov2(depth, fov_h=87, fov_v=58, intr_mat=None, min_depth=0.1, max_depth=3):
+    """
+    Return 3xN array and the mask of valid points in [min_depth, max_depth]
+    """
+
+    h, w = depth.shape
+
+    cam_mat = intr_mat
+    if intr_mat is None:
+        cam_mat = get_sim_cam_mat_with_fov2(h, w, fov_h, fov_v)
+    # cam_mat[:2, 2] = 0
+    cam_mat_inv = np.linalg.inv(cam_mat)
+
+    y, x = np.meshgrid(np.arange(h), np.arange(w), indexing="ij")
+    x = x.reshape((1, -1))[:, :] + 0.5
+    y = y.reshape((1, -1))[:, :] + 0.5
+    z = depth.reshape((1, -1))[:, :]
+
+    p_2d = np.vstack([x, y, np.ones_like(x)])
+    pc = cam_mat_inv @ p_2d
+    pc = pc * z
+    mask = pc[2, :] > min_depth
+
+    mask = np.logical_and(mask, pc[2, :] < max_depth)
+    # pc = pc[:, mask]
+    return pc, mask
+
+"""
+Generate intrinsic camera matrix from horizontal and vertical FOV
+"""
+def get_sim_cam_mat_with_fov2(h, w, fov_h, fov_v):
+    cam_mat = np.eye(3)
+    cam_mat[0, 0] = w / (2.0 * np.tan(np.deg2rad(fov_h / 2)))
+    cam_mat[1, 1] = h / (2.0 * np.tan(np.deg2rad(fov_v / 2)))
+    cam_mat[0, 2] = w / 2.0
+    cam_mat[1, 2] = h / 2.0
+    return cam_mat
 
 '''
 intrinsic matrix with field of view

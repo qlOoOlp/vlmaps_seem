@@ -1,11 +1,17 @@
 langs = [
     "void",
-    "wall",
-    "floor",
     "chair",
-    "door",
+    "wall",
+    # "wall above the door"
     "table",
     "window",
-    "sofa",
-    "counter"
+    "floor",
+    "stairs",
+    "door",
+    "box",
+    "television",
+    "human",
+    "cabinet",
+    "keyboard",
+    "other",
 ]

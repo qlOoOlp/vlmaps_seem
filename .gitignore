@@ -31,9 +31,9 @@
 *.gif
 
 # Mode weight files
-*.ckpt
-*.pt
-# checkpoints/
+# *.ckpt
+# *.pt
+checkpoints/
 
 # RAW
 *.raw

@@ -180,9 +180,9 @@ class LSeg(BaseModel):
 
         text = text.to(x.device)
         self.logit_scale = self.logit_scale.to(x.device)
-        text_features = self.clip_pretrained.encode_text(text)
+        text_features = self.clip_pretrained.encode_text(text)                  # text embedding
 
-        image_features = self.scratch.head1(path_1)
+        image_features = self.scratch.head1(path_1)                             # image embedding
 
         imshape = image_features.shape
         image_features = image_features.permute(0,2,3,1).reshape(-1, self.out_c)
@@ -333,7 +333,8 @@ class LSegEnc(BaseModel):
         pixel_encoding = self.scratch.output_conv(pixel_encoding)
         out = self.scratch.output_conv(out)
             
-        return pixel_encoding, out
+        return pixel_encoding, out      # outputs, logits
+            # (1, 512, 480, 480), (1, 5, 480, 480)
 
 ###################################################################
 # Demo
